@@ -1,6 +1,6 @@
-# Deepgram ASR Connector - Direct WebSocket Real-Time Audio Streaming - Skip initial silence
+# Deepgram ASR Connector - Real-Time Audio Streaming - Skip Initial Silence
 
-You can use this Connector code to send audio from a Vonage API voice call to Deepgram Speech-to-Text (STT) engine for real-time transcription via WebSocket without using a Deepgram npm library.
+You can use this Connector code to send audio from a Vonage API voice call to Deepgram Speech-to-Text (STT) engine for real-time transcription via WebSocket without using a Deepgram node library.
 
 It also avoids transmitting the silence audio packets to Deepgram until PSTN callee has answered the PSTN outbound call.
 
