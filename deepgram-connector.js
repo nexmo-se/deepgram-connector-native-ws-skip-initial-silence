@@ -92,13 +92,13 @@ app.ws('/socket', async (ws, req) => {
   //--
 
   if (req.query.diarize) {
-    dgSttDiarize = req.query.diarize;   // ability to override to true on a per session basis (per incoming WebSocket)
+    dgSttDiarize = req.query.diarize;   // ability to override on a per session basis (per incoming WebSocket)
   }
 
   //--
 
   if (req.query.language_code) {
-    dgSttLanguageCode = req.query.language_code; // ability to override to true on a per session basis (per incoming WebSocket)
+    dgSttLanguageCode = req.query.language_code; // ability to override on a per session basis (per incoming WebSocket)
   }
 
   //--
