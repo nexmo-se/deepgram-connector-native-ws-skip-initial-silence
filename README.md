@@ -14,7 +14,7 @@ See https://github.com/nexmo-se/outbound-pstn-with-websocket-app as **the peer V
 
 ## Transcripts
 
-Speech transcripts are directly posted via webhooks to the URL specified by the Voice API when creating the WebSocket to this connector.
+Speech transcripts are directly posted via webhooks to the URL specified by the peer Voice API application when initiating the WebSocket connection to this connector.
 
 ## Set up
 
