@@ -76,6 +76,12 @@ Set up the peer Voice API application per the instructions in its [repository](h
 
 Call out a phone from that application to have the call transcribed by Deepgram STT (Speech-to-Text) engine.
 
+### OPTIONAL - Audio recording of all sessions
+
+In the .env file, set the parameter RECORD_ALL_AUDIO to true.</br>
+All audio recording files will be stored in the ./recordings folder.</br>
+Important: Make sure there is enough disk storage as you may need to manually delete those files.</br>
+
 
 
 

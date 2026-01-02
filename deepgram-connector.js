@@ -13,10 +13,9 @@ require('express-ws')(app);
 app.use(bodyParser.json());
 
 const webSocket = require('ws');
-
-//--
-
 const axios = require('axios');
+const fsp = require('fs').promises;
+const moment = require('moment');
 
 //---- CORS policy - Update this section as needed ----
 
@@ -28,7 +27,12 @@ app.use(function (req, res, next) {
   next();
 });
 
-//---
+//--- Record all audio ? --
+
+let recordAllAudio = false;
+if (process.env.RECORD_ALL_AUDIO == "true") { recordAllAudio = true };
+
+//-------------------------
 
 // ONLY if needed - For self-signed certificate in chain - In test environment
 // Must leave next line as a comment in production environment
@@ -51,18 +55,37 @@ app.ws('/socket', async (ws, req) => {
 
   const webhookUrl = req.query.webhook_url;
   const sessionId = req.query.session_id;
-  const outboundPstn = req.query.outbound_pstn == "true" ? true : false;
+  // const outboundPstn = req.query.outbound_pstn == "true" ? true : false;
+  const pstnNumber = req.query.pstn_number;
+
   let sendAudioToDg = true;
 
-  if (outboundPstn) {
-    sendAudioToDg = false;
+  // if (outboundPstn) {
+  //   sendAudioToDg = false;
+  // }
+
+  // console.log('>>> Webhook URL:', webhookUrl);
+  console.log('>>> Session ID:', sessionId);
+  // console.log('>>> PSTN outbound call:', outboundPstn);
+  console.log('>>> PSTN number:', pstnNumber);
+
+
+  //-- audio recording file -- 
+  //-- here, you may create your own PSTN audio recording file name template after './recordings/'
+  const audioFromVgFileName = './recordings/' + pstnNumber + '_' + moment(Date.now()).format('YYYY_MM_DD_HH_mm_ss_SSS') + '_ws_' + sessionId + '.raw'; // using server local time, not UTC
+  // const audioFromVgFileName = './recordings/' + pstnNumber + '_' + moment.utc(Date.now()).format('YYYY_MM_DD_HH_mm_ss_SSS') + '_ws_' + sessionId  + '.raw'; // using UTC
+ 
+  if (recordAllAudio) { 
+
+    try {
+      await fsp.writeFile(audioFromVgFileName, '');
+    } catch(e) {
+      console.log('>>> Error creating file', audioFromVgFileName, e);
+    }
+
   }
 
-  console.log('webhook URL:', webhookUrl);
-  console.log('session ID:', sessionId);
-  console.log('PSTN outbound call:', outboundPstn);
-
-  //---
+  //--
 
   let dgJwt = null;
 
@@ -177,7 +200,17 @@ app.ws('/socket', async (ws, req) => {
           wsDG.send(msg);
           // process.stdout.write(".");
 
-      }  
+      }
+
+      //--
+
+      if (recordAllAudio) {
+        try {
+          fsp.appendFile(audioFromVgFileName, msg, 'binary');
+        } catch(error) {
+          console.log(">>> Error writing to file", audioFromVgFileName, error);
+        }
+      } 
 
     }
 
