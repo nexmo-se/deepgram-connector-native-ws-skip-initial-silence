@@ -54,21 +54,21 @@ app.ws('/socket', async (ws, req) => {
   console.log('>>> Vonage WebSocket established');
 
   const webhookUrl = req.query.webhook_url;
-  const sessionId = req.query.session_id;
-  // const outboundPstn = req.query.outbound_pstn == "true" ? true : false;
   const pstnNumber = req.query.pstn_number;
+  const sessionId = req.query.session_id;
+  const outboundPstn = req.query.outbound_pstn == "true" ? true : false;
 
   let sendAudioToDg = true;
 
-  // if (outboundPstn) {
-  //   sendAudioToDg = false;
-  // }
+  if (outboundPstn) {
+    sendAudioToDg = false;
+  }
+
+  console.log('>>> sendAudioToDg:', sendAudioToDg);
 
   // console.log('>>> Webhook URL:', webhookUrl);
-  console.log('>>> Session ID:', sessionId);
+  console.log('>>> Callee number:', pstnNumber);
   // console.log('>>> PSTN outbound call:', outboundPstn);
-  console.log('>>> PSTN number:', pstnNumber);
-
 
   //-- audio recording file -- 
   //-- here, you may create your own PSTN audio recording file name template after './recordings/'
@@ -135,7 +135,7 @@ app.ws('/socket', async (ws, req) => {
   const wsDGUri = dgWsListenEndpoint + '?callback=' + webhookUrl + 
   '&diarize=' + dgSttDiarize + '&encoding=linear16&sample_rate=16000' + 
   '&language=' + dgSttLanguageCode + '&model=' + dgSttModel + '&punctuate=true' + '&endpointing=10' + 
-  '&extra=session_id:' + sessionId + '&extra=language_code:' + dgSttLanguageCode;
+  '&extra=callee:' + pstnNumber + '&extra=session_id:' + sessionId + '&extra=language_code:' + dgSttLanguageCode;
  
   console.log('Deepgram WebSocket URI:', wsDGUri);
 
@@ -190,6 +190,7 @@ app.ws('/socket', async (ws, req) => {
 
       if (JSON.parse(msg).digit == '8') {
         sendAudioToDg = true;
+        console.log('>>> sendAudioToDg:', sendAudioToDg);
         console.log('\n>>> PSTN call has been answered');
       }
     
@@ -228,9 +229,6 @@ app.ws('/socket', async (ws, req) => {
   });
 
   //--
-
-  console.log('>>> sendAudioToDg:', sendAudioToDg);
-
 
   if (!sendAudioToDg) {
 
